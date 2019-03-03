@@ -1,5 +1,5 @@
-Before proceeding, a quick warn: this is a builders project, there is no shield available, or a complete ready to buy version, atm, as  TC4C ! Yet...
-However, to approach this build, only simple pins/wires soldering knowledge is required, nothing smd is involved, the whole project use ready soldered breadboard modules.
+Before proceeding, a quick warning: this is a builders project, there is no shield available, or a complete ready to buy version, atm, as  TC4C ! Yet...
+However, to approach this build, only simple pins/wires soldering knowledge is required, nothing smd is involved, the whole project uses ready soldered breadboard modules.
 
 And now, explanation of TC4ESP schematic... components description:
 
@@ -19,7 +19,7 @@ And now, explanation of TC4ESP schematic... components description:
 - LCD - any cheap 20x4 I2C LCD. Library used for this display: https://github.com/marcoschwartz/LiquidCrystal_I2C
 
 - thermocouples interface
-    TC4ESP use the same MCP3424 capable ADC, but raise the performance bar at other level, adding for each thermocouple a dedicate amplifier with cold junction compensation, from the AD849x line, manufactured by Analog Devices.
+    TC4ESP use the same MCP3424 capable ADC, but raise the performance bar at other level, adding for each thermocouple a dedicated amplifier with cold junction compensation, from the AD849x line, manufactured by Analog Devices.
     
     With this setup the resolution and sample rate is in the same ballpark as the phidgets device, at 1/4 cost, or less. 
     
@@ -30,15 +30,15 @@ And now, explanation of TC4ESP schematic... components description:
     
     Amplifiers are available for K and J types only. Not sure how popular is the T type thermocouple, though...
     
-    No more ambient sensor is used, because CJC is a feature of TC amp itself.
+    Ambient sensor is not used anymore, because CJC is a feature of TC amp itself.
     
-    Software changes to handle this configuration are very small... actually it could operate with the original library unchanged, using the linear model class, just specifying a slope of 5mV per C degree. However, for more code optimization, some sections related to ambient sensor were disabled, and also the code for K/J/T thermocouples was been conditionally disabled based on several defines. 
-    The resulting library should be of greater interest for Arduino users than for ESP platform, because a serious memory amount was been freed this way.
+    Software changes to handle this configuration are very small... actually it could operate with the original library unchanged, using the linear model class, just specifying a slope of 5mV per C degree. However, for more code optimization, some sections related to ambient sensor were disabled, and also the code for K/J/T thermocouples has been conditionally disabled based on several defines. 
+    The resulting library should be of greater interest for Arduino users than for ESP platform, because a serious memory amount has been freed this way.
     
 - potentiometers
-     Because one of the most important drawbacks of the ESP platform is the lack of multiple ADC, this issue was been addressed in two ways:
-     - Additional operating modes, based on buttons instead pots, were been added in a separate user interface;
-     - in a later iteration, for those not happy to operate clicking buttons, the pots based functionality was been reinstated, using the unused channels 3 and 4 of MCP3424, assuming they aren't used for additional thermocouples !
+     Because one of the most important drawbacks of the ESP platform is the lack of multiple ADC, this issue has been addressed in two ways:
+     - Additional operating modes, based on buttons instead of pots, have been added in a separate user interface;
+     - in a later iteration, for those not happy to operate clicking buttons, the pots based functionality has been reinstated, using the unused channels 3 and 4 of MCP3424, assuming they aren't used for additional thermocouples !
      
      So, anyone interested to approach this new platform should be aware about this possible scenario limitation: if all the 4 TC channels are desired to be used for temperature, AND not interested to explore a new user interface where heater is operated using buttons, then the only available operating mode is profile based roasting, with no manual heater control.
      
