@@ -1,6 +1,8 @@
-Explanation of TC4ESP schematic.
+Before starting, a short warn: this is a builders project, there is no shield available, or a complete ready to buy version, as is TC4C ! Yet...
+However, to aprroach this build only simple pins/wires soldering knowledge is required, nothing smd is involved, the whole project use ready soldered breadboard modules.
 
-Components description:
+And now, explanation of TC4ESP schematic... components description:
+
 - buttons pad - done using the resistor ladder principle - https://en.wikipedia.org/wiki/Resistor_ladder - and the ADC input of ESP8266.
     
     The buttons pad can be DIY, or you can buy ready to use boards for this purpose from eBay, search for "Analog button for Arduino".
