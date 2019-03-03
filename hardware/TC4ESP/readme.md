@@ -1,5 +1,5 @@
-Before starting, a short warn: this is a builders project, there is no shield available, or a complete ready to buy version, as is TC4C ! Yet...
-However, to aprroach this build only simple pins/wires soldering knowledge is required, nothing smd is involved, the whole project use ready soldered breadboard modules.
+Before proceeding, a quick warn: this is a builders project, there is no shield available, or a complete ready to buy version, atm, as  TC4C ! Yet...
+However, to approach this build, only simple pins/wires soldering knowledge is required, nothing smd is involved, the whole project use ready soldered breadboard modules.
 
 And now, explanation of TC4ESP schematic... components description:
 
