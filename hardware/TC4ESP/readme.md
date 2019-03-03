@@ -27,7 +27,9 @@ Components description:
      Because one of the most important drawbacks of the ESP platform is the lack of multiple ADC, this issue was been addressed in two ways:
      - Additional operating modes, based on buttons instead pots, were been added in a separate user interface;
      - in a later iteration, for those not happy to operate clicking buttons, the pots based functionality was been reinstated, using the unused channels 3 and 4 of MCP3424, assuming they aren't used for additional thermocouples !
+     
      So, anyone interested to approach this new platform should be aware about this possible scenario limitation: if all the 4 TC channels are desired to be used for temperature, AND not interested to explore a new user interface where heater is operated using buttons, then the only available operating mode is profile based roasting, with no manual heater control.
+     
      Another approach, that is now in the evaluation queue, is to use a rotary encoder instead potentiometer.
      
 The code branch for this platform can be found here:
