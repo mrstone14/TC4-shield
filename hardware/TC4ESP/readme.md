@@ -46,4 +46,4 @@ And now, explanation of TC4ESP schematic... components description:
      Another approach, that is now in the evaluation queue, is to use a rotary encoder instead potentiometer.
      
 The code branch for this platform can be found here:
-... to come
+https://github.com/renatoa/TC4-shield/tree/master/applications/Artisan/aArtisanESP
