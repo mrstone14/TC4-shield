@@ -10,3 +10,6 @@ Changed files:
     changes being added only for platform compatibility and new features.
 - phase_ctrl.cpp, phase_ctrl.h
 - cmndreader.cpp
+
+Hardware related details here:
+https://github.com/renatoa/TC4-shield/tree/master/hardware/TC4ESP
