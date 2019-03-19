@@ -45,6 +45,7 @@
 //  20181217: New implementation as adcButtons, for buttons connected as a resistor ladder, read by ESP2866 ADC0
 //            https://en.wikipedia.org/wiki/Resistor_ladder
 //            Also changed logic to detect long press events - Renato Aranghelovici
+//  20190319: modified for the ebay 5 switches board sold as "Analog Button for Arduino AD Keyboard ..."
 
 #include "adcButton.h"
 
@@ -155,28 +156,36 @@ void adcButtonPE16::begin( uint8_t N, uint8_t addr ) {
 uint8_t adcButtonPE16::rawRead() {
 
 	// buttons are connecting the ADC input of MCU to the outputs of a resistor ladder.
-	// like this: https://i.stack.imgur.com/Hqt2f.png
-	// R6 should be at least 10x times bigger than R1...R5
+	// https://en.wikipedia.org/wiki/Resistor_ladder
 
 	int adc = analogRead(A0);
-	bits = (( adc + 95) / 190); // translate 200, 400, 600, 800 adc values to 1...4
-	//if (bits > 0) { Serial.print("# switch adc-bits "); Serial.println(adc); Serial.println(-bits); }
-	//return 2^(bits-1);
 
+	// the code below is specific to the resistor ladder you are using, and should be modified accordingly.
+	// 20190319 - modified for the ebay 5 switches board sold as 
+	// "Analog Button for Arduino AD Keyboard ..."
+
+	bits = ( adc / 100); // translate adc values in the hundreds range, to a single digit switch index
+	//if (adc < 1000) { Serial.print("# switch adc-bits "); Serial.print(adc); Serial.println(-bits); }
+
+	// map physical switches index to TC4 logical switches mask
 	switch (bits) {
+		case 0:    
+			return 1; // UP/PREV/PLUS/INCR
+			break;
 		case 1:    
-		  return 1; // UP/PREV/PLUS/INCR
-		  break;
-		case 2:    
-		  return 4; // ENTER/START/STOP
-		  break;
+			return 4; // ENTER/START/STOP
+			break;
+		case 5:    
+			return 2; // DOWN/NEXT/MINUS/DECR
+			break;
 		case 3:    
-		  return 2; // DOWN/NEXT/MINUS/DECR
-		  break;
-		case 4:    
-		  return 8; // MODE/SETTINGS
-		  break;
+			return 8; // MODE/SETTINGS
+			break;
+		case 7:
+			return 16; // SW5, unhandled by TC4
+			break;
 	}
+	// end of hardware dependent code
 
 	return 0;
 };
