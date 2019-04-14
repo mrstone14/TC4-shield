@@ -40,9 +40,11 @@
 // Revision history:
 //  20120126: Arduino 1.0 compatibility
 //            (thanks and acknowledgement to Arnaud Kodeck for his code contributions).
-//  20181217: New implementation as adcButtons, for buttons connected as a resistor ladder, read by ESP2866 ADC0
-//            https://en.wikipedia.org/wiki/Resistor_ladder
-//            Also changed logic to detect long press events - Renato Aranghelovici
+//  20181217: New implementation as adcButtons, - Renato Aranghelovici
+//            for buttons connected as a resistor ladder, read by ADC0 https://en.wikipedia.org/wiki/Resistor_ladder
+//            Also changed logic to detect long press events 
+//  20190319: modified for the ebay 5 switches board sold as "Analog Button for Arduino AD Keyboard ..."
+//  20190413: long press timing fix; added keyClicked method
 
 #ifndef CBUTTON_H_
 #define CBUTTON_H_
@@ -70,6 +72,7 @@ public:
   uint8_t readButtons(); // returns bit = 1 if key has changed since last debounce
   boolean keyPressed( uint8_t key );
   boolean keyChanged( uint8_t key );
+  boolean keyClick(uint8_t key);
   boolean anyPressed(); // true if any button is pressed
   byte getPressedLongKeys(); // uint8_t key
 
