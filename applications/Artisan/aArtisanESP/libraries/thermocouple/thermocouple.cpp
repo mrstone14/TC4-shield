@@ -55,7 +55,7 @@ tcBase::tcBase() {
 //           temperature at hot junction
 FLOAT tcBase::Temp_C( FLOAT m, FLOAT coldC ) {
 	FLOAT mv = m;
-	if (coldC != 0.0)
+	if (CJC && coldC != 0.0)
 		mv += mV_C(coldC);
 	if (inrange_mV(mv))
 		return absTemp_C(mv);	

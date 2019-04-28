@@ -3,6 +3,8 @@
 // Revision history:
 //  20120126: Compatibility with Arduino 1.0
 //  20190301: optimised by adding ESP8266 compatibility and conditional compiling for unused TC types, to save memory, by RenatoA
+//  20190403: added CJC as an option, default false for linear model, true for others
+//  20190418: added ESP32 support
 
 
 // *** BSD License ***
@@ -46,7 +48,7 @@
 #include <WProgram.h>
 #endif
 
-#ifndef ESP8266
+#if ! (defined ESP8266 || defined ESP32)
 #include <avr/pgmspace.h>
 #endif 
 
@@ -84,6 +86,7 @@ class tcBase { // pure virtual base class
     virtual FLOAT absTemp_C( FLOAT mV ) = 0;   // returns temperature (referenced to 0C) for mV
     virtual FLOAT absMV_C( FLOAT tempC ) = 0;  // returns raw mV reading for temp referenced to 0C
     virtual FLOAT _poly( FLOAT x, const FLOAT* coeff, uint8_t nrows, uint8_t ncols );
+	bool CJC;
 };
 
 class tcLinear : public tcBase { // basic linear approximation
@@ -100,6 +103,7 @@ class tcLinear : public tcBase { // basic linear approximation
     virtual FLOAT absMV_C( FLOAT C );
   private:
     FLOAT slope;
+	bool CJC = false;
 };
 
 #ifdef usingK
@@ -123,6 +127,7 @@ class typeK : public tcBase {
     static PROGMEM const PFLOAT coeff_dir[11][2];
     static PROGMEM const PFLOAT range_dir[2][2];
     static PROGMEM const PFLOAT a[3];
+	bool CJC = true;
 };
 #endif  // using K
 
@@ -145,6 +150,7 @@ class typeT : public tcBase {
     // direct coefficients
     static PROGMEM const PFLOAT coeff_dir[15][2];
     static PROGMEM const PFLOAT range_dir[2][2];
+	bool CJC = true;
 };
 #endif // using T
 
@@ -167,6 +173,7 @@ class typeJ : public tcBase {
     // direct coefficients
     static PROGMEM const PFLOAT coeff_dir[9][2];
     static PROGMEM const PFLOAT range_dir[2][2];
+	bool CJC = true;
 };
 #endif // using J
 
