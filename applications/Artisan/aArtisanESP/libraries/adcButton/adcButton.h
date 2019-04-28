@@ -55,9 +55,6 @@
 #include <WProgram.h>
 #endif
 
-//#include <Wire.h>
-//#include "MCP23017.h"
-
 
 #define PERIOD 10  // ms between status checks
 #define NCHECKS 3 // how many raw reads until switch is considered stable
@@ -102,7 +99,7 @@ public:
    virtual void ledAllOn(){ ledUpdate( 0x07 ); }
    virtual void ledUpdate( uint8_t b3 );
 protected:
-   virtual uint8_t rawRead(); // returns 8 input bits from port expander
+   virtual uint8_t rawRead(); // returns up to 8 bits mask of button pressed
    uint8_t PEaddr;
    uint8_t LEDstate;
 };

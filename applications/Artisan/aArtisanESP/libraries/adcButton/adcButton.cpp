@@ -47,6 +47,7 @@
 //            Also changed logic to detect long press events 
 //  20190319: modified for the ebay 5 switches board sold as "Analog Button for Arduino AD Keyboard ..."
 //  20190413: long press timing fix; added keyClicked method
+//  20190418: added ESP32 support
 
 #include "adcButton.h"
 
@@ -56,6 +57,10 @@
 #else
 #define _READ receive
 #define _WRITE send
+#endif
+
+#ifdef ESP32
+#include "driver/adc.h"
 #endif
 
 // ------------------------------------------ base class methods
@@ -157,7 +162,12 @@ void adcButtonBase::debounce() {
 // ----------------------------------------------------- 
 void adcButtonPE16::begin( uint8_t N, uint8_t addr ) {
 
-// For ADC based buttons approach, do nothing
+#ifdef ESP32
+	// for ESP32 set resolution to 10 bits, to match ESP8266
+	adc1_config_width(ADC_WIDTH_BIT_10);
+	// set channel attentuation to 10 dB, to match ESP8266 3.3V scale
+	adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
+#endif
 
 }
 
@@ -167,7 +177,11 @@ uint8_t adcButtonPE16::rawRead() {
 	// buttons are connecting the ADC input of MCU to the outputs of a resistor ladder.
 	// https://en.wikipedia.org/wiki/Resistor_ladder
 
+#ifdef ESP8266
 	int adc = analogRead(A0);
+#elif defined ESP32
+	int adc = adc1_get_raw(ADC1_CHANNEL_0);
+#endif
 
 	// the code below is specific to the resistor ladder you are using, and should be modified accordingly.
 	// 20190319 - modified for the ebay 5 switches board sold as 
