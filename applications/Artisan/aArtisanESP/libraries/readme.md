@@ -5,4 +5,5 @@ TC4ESP hardware specific libraries:
 Modified libraries:
 - thermocouple
 - cADC
+- cmndproc
   
