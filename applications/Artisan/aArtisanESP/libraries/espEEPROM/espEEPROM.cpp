@@ -150,6 +150,8 @@ uint16_t espEEPROM::read( uint16_t ptr, char str[], uint16_t max ) {
 				} else
 				if( (char)b == '\0' )
 					done = 1;
+				if (b < 32 || b > 127) str[k] = ' '; // replace non-ascii with spaces
+
 			} // end for
 #ifdef epDEBUG
 			DPRINT(".string read len: ", k);
@@ -157,8 +159,13 @@ uint16_t espEEPROM::read( uint16_t ptr, char str[], uint16_t max ) {
 
 			// ptr += n;
 
-
 	} // end while not done
+
+	// fill the rest of buffer with zeroes
+	for (j = k; j < n ; j++) {
+		str[j] = '\0';
+	}
+
 	return k;
 	
 }

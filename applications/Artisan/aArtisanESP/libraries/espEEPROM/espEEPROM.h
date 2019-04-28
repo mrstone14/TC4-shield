@@ -1,5 +1,5 @@
 /*
- * derived from mcEEPROM.h
+ * fork from mcEEPROM.h, by Renato Aranghelovici
  *
  *  Created on: Jul 27, 2010
  *      Author: Jim Gallt
@@ -15,6 +15,7 @@
 // 20120126  Arduino 1.0 compatibility
 //  (thanks and acknowledgement to Arnaud Kodeck for his code contributions).
 // 20190106  modified for ESP8266 own EEPROM, by Renato Aranghelovici
+// 20190418  added support for ESP32
 
 //
 // ------------------------------------------------
@@ -60,6 +61,9 @@
 #endif
 
 #include <EEPROM.h>
+#ifdef ESP32
+#define FLASH_SECTOR_SIZE 0x1000
+#endif
 #define BUFFER_SIZE 512 // arbitrary choice, to accomodate the 400 bytes profile size in a single commit
 #define PAGE_SIZE 512 // same as above
 #define MAX_ADDR FLASH_SECTOR_SIZE - 1 // 1000H = 4K EEPROM
