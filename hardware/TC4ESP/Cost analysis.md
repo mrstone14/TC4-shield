@@ -19,3 +19,5 @@ Total for wifi version: $22
 ...or, standalone and wifi, all bells configuration: $29
 
 All prices are eBay.com, from Asia, mostly with free shipping worldwide
+
+The price of the probes is not included, this depends a lot of your choice.
