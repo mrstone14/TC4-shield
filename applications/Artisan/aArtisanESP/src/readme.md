@@ -4,7 +4,8 @@ file posted atm is a limited version, still work in progress
 - SGfilters.ino - RoR computation based on Savitsky Golay smooth/filtering
 - espProfiles.ino - profile related EEPROM management functions
 - espData.h - data structures, you can define here the very first and most generic roasting profile you want to be loaded at first run
-- libESP.h - new file, header with external variables from the original aArtisanQ_PID sketch. Contains also some specific settings that you can change, like maximum ET allowed.
+- libESP.h - new file, header with external variables from the original aArtisanQ_PID sketch.   
+Contains also some specific settings that you can change, like maximum ET allowed.
 
 Changed files:
 - aArtisanQ_PID.ino - a slighltly changed version of 6.7, changes being added only for platform compatibility and new features.   
