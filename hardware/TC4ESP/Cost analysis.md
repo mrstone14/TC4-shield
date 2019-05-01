@@ -15,7 +15,7 @@ Total for 2 temp and heater control: $20
 Total for standalone version: $27
 
 - HC-06 BT module - $1.86 - for wifi control via Android app
-Total for wifi version: $22
+Total for wifi version: $22\
 ...or, standalone and wifi, all bells configuration: $29
 
 All prices are eBay.com, from Asia, mostly with free shipping worldwide
