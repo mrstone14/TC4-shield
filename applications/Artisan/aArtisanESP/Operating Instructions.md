@@ -9,7 +9,7 @@ There are some display changes too, listed below, for simple UI:
 - the AT temperature area was been replaced by a roast phase/mode indicator. In that area you can read the following:\
 Roast phase: Idle, Roast, Cool, for simple UI, and more for extended version: Charge, TP, Drying, Yellow, Dev\
 Mode: Man of Prof #, alternating with the roast phase above, to show manual mode or the number of profile used
-The reason of retiring AT temperature: no more AT sensor, because the TC dedicated amplifiers have have embeded CJC\
+The reason of retiring AT temperature: missing sensor, because the TC dedicated amplifiers have have embeded CJC.
 - a "<" sign near the HRT or FAN value, showing the target of UP/DOWN buttons control. This pointer can be moved with mode button, during roast only
 - the lower right half of display is used now for phase end predictions, Artisan style\
 The right half of row 3, where SV is shown during a profile roast, now host the DE prediction during a manual roast\
