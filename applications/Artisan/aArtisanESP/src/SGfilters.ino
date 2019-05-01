@@ -46,6 +46,8 @@
 // Custom CalcRise, based on Savitsky-Golay filter
 //////////////////////////////////////////////////
 
+#define sgWindow 11
+
 // SG first deriv. coefficients
 // coefficients for 7, 9, 11, 15 seconds window are provided, choose your preference
 const int16_t sg_1stDer_coef[sgWindow] =
@@ -77,7 +79,7 @@ float sgRoR(uint8_t k, float Temp, int32_t time)
 	{
 		sgTimesHist[k][i - 1] = sgTimesHist[k][i];
 		sgTempsHist[k][i - 1] = sgTempsHist[k][i];
-		sgRoRHist[k][i - 1] = sgRoRHist[k][i];
+		// sgRoRHist[k][i - 1] = sgRoRHist[k][i];
 	}
 
 	//histNextIdx++;
@@ -116,7 +118,7 @@ float sgRoR(uint8_t k, float Temp, int32_t time)
 	dT = dT * 60.0; // rise per minute
 	if (dT > 999) dT = 999;
 	if (dT < -999) dT = -999;
-	sgRoRHist[k][sgWindow - 1] = dT;
+	// sgRoRHist[k][sgWindow - 1] = dT;
 	//Serial.print("dT: ");  Serial.println(dT);
 	return dT; // rise per minute
 

@@ -603,7 +603,7 @@ void get_samples() // this function talks to the amb sensor and ADC via I2C
       v >>= 10; 
       AT = amb.getAmbF();
       T[k] = tc->Temp_F( 0.001 * v, AT ); // convert uV to Fahrenheit;
-#if (defined ESP8266 || defined ESP32) && defined AlternateUI
+#if (defined ESP8266 || defined ESP32) && defined FULL_ALT_UI
 	  if (modeVirTemp) {
 		  // overwrite TC data with virtual thermocouples values.
 		  virtTCs(k);
@@ -1008,7 +1008,7 @@ void readAnlg2() { // read analog port 2 and adjust OT2 output
 // ---------------------------------
 void updateSetpoint() { //read profile data from EEPROM and calculate new setpoint
 
-#ifdef AlternateUI
+#ifdef FULL_ALT_UI
 	if (checkNoProfileFollowing()) return;
 #endif // AlternateUI
 

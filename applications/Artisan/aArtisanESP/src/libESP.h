@@ -59,6 +59,8 @@ extern uint32_t next_loop_time; //
 
 extern int LCD_mode;
 
+extern void getProfileDescription(int);
+
 #ifdef ANALOGUE1
 extern uint8_t anlg1; // analog input pins
 //int32_t old_reading_anlg1; // previous analogue reading
@@ -106,5 +108,24 @@ struct profBlock {
 #define vETMaxC    270.0	// Limit ET at max heater power
 #define SIMPLE_ALT_UI
 #undef FULL_ALT_UI
+
+#define DE_TEMP 150.0f
+#define FC_TEMP 200.0f
+#define DEF_DE_TARGET 300 //  5 minutes average DE target time
+#define DEF_FC_TARGET 600 // 10 minutes average FC target time
+#define DE_FC_TIME_WINDOW 15 // +/- seconds interval for heater % adjustements
+
+#define DE_MIN 180 // 3 min min dry
+#define DE_MAX 540 // 9 min max dry
+#define YL_MIN 180 // 3 min min Maillard
+
+#ifndef AMPED
+#ifdef ANALOGUE1
+#define ANLG1ADC3 // if potentiometer connected on ADC3 in AMPED/16 bit mode
+#endif // ANALOGUE1
+#ifdef ANALOGUE2
+//#define ANLG2ADC4 // if potentiometer connected on ADC4 in AMPED/16 bit mode
+#endif // ANALOGUE2
+#endif // AMPED
 
 #endif

@@ -264,21 +264,6 @@
 //#define TRIAC_MOTOR // inductive loads need a longer pulse width to fire at 100%
 #define TRIAC_HEATER // enable this for resistive loads, like heaters
 
-#define DE_TEMP 150.0f
-#define FC_TEMP 200.0f
-#define DEF_DE_TARGET 300 //  5 minutes average DE target time
-#define DEF_FC_TARGET 600 // 10 minutes average FC target time
-#define DE_FC_TIME_WINDOW 15 // +/- seconds interval for heater % adjustements
-
-#ifndef AMPED
-#ifdef ANALOGUE1
-#define ANLG1ADC3 // if potentiometer connected on ADC3 in AMPED/16 bit mode
-#endif // ANALOGUE1
-#ifdef ANALOGUE2
-//#define ANLG2ADC4 // if potentiometer connected on ADC4 in AMPED/16 bit mode
-#endif // ANALOGUE2
-#endif // AMPED
-
 
 #endif
 
