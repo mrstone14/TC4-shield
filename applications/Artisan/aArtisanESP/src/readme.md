@@ -7,7 +7,7 @@ file posted atm is a limited version, still work in progress
 - libESP.h - new file, header with external variables from the original aArtisanQ_PID sketch. Contains also some specific settings that you can change, like maximum ET allowed.
 
 Changed files:
-- aArtisanQ_PID.ino - a slighltly changed version of 6.7, changes being added only for platform compatibility and new features.
+- aArtisanQ_PID.ino - a slighltly changed version of 6.7, changes being added only for platform compatibility and new features.   
 It  is 100% backward compatible with Arduino version, it should compile and run ok if replacing the original TC4 sketch.
 - phase_ctrl.cpp, phase_ctrl.h
 - cmndreader.cpp
