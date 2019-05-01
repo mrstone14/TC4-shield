@@ -15,7 +15,9 @@ The reason of retiring AT temperature: no more AT sensor, because the TC dedicat
 The right half of row 3, where SV is shown during a profile roast, now host the DE prediction during a manual roast\
 The right half of row 4, now host either the FC prediction during a manual roast, either DE and FC, flashed alternate, during a profile roast.
 
-Custom buttons behaviour in simple UI:
+![TC4ESP UI](screenshots/TC4ESP-UI1.png "TC4ESP UI")
+
+Buttons new behaviour in simple UI:
 - up/down - control heater or fan, instead pot in manual mode.\
 Long press on up/down keys, when heater control is active, are shortcuts for MIN/MID/MAX OT1. No long press effect for FAN control.\
 Up key press, in Idle state only, will also start manual roast, with HTR set to MIN_OT1 value, and timer reset.
