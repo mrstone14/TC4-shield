@@ -14,7 +14,7 @@ Total for 2 temp and heater control: $20
 - buttons board - $1.83 and 20x4 LCD - $4.58 - for standalone operations\
 Total for standalone version: $27
 
-- HC-06 BT module - $1.86 - for wifi control via Android app
+- HC-06 BT module - $1.86 - for wifi control via Android app\
 Total for wifi version: $22\
 ...or, standalone and wifi, all bells configuration: $29
 
