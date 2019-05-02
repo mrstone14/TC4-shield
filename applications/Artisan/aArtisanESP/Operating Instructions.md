@@ -1,10 +1,10 @@
 Operating TC4ESP
 ================
 
-Because in this architecture there could be no pots, due to ESP 8266 lack of ADC, the 4 buttons logic has been changed/improved, in order to replace the pots functionality and also add new features
+Because in this architecture there could be no pots, due to ESP 8266 lack of ADC, the 4 buttons logic has been changed/improved, in order to replace the pots functionality and also add new features.\
 There are two UI provided, at the moment of first draft only the simple UI is available, the extended UI is still work in progress.
 
-There are some display changes too, listed below, for simple UI:
+There are some display changes, listed below, for the simple UI:
 - the most significant: works on 20x4 displays only
 - the AT temperature area was been replaced by a roast phase/mode indicator. In that area you can read the following:\
 Roast phase: Idle, Roast, Cool, for simple UI, and more for extended version: Charge, TP, Drying, Yellow, Dev\
@@ -25,3 +25,7 @@ Up key press, in Idle state only, will also start manual roast, with HTR set to 
 Long press resets timer and start profile, or stop roast in either mode
 - mode key, profile browsing and choice, as standard TC4, in Idle phase\
 During roast acts as UP/DOWN buttons control toggle, between HTR and FAN, will move the "<" pointer on display.
+
+Buttons layout, meaning and their application codes, for the eBay buttons pad
+
+![Buttons](screenshots/Buttons.jpg "TC4ESP UI")
