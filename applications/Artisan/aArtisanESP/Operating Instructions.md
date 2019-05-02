@@ -13,7 +13,8 @@ The reason of retiring AT temperature: missing sensor, because the TC dedicated 
 - a "<" sign near the HRT or FAN value, showing the target of UP/DOWN buttons control. This pointer can be moved with mode button, during roast only
 - the lower right half of display is used now for phase end predictions, Artisan style\
 The right half of row 3, where SV is shown during a profile roast, now host the DE prediction during a manual roast\
-The right half of row 4, now host either the FC prediction during a manual roast, either DE and FC, flashed alternate, during a profile roast.
+The right half of row 4, now host either the FC prediction during a manual roast, either DE and FC, flashed alternate, during a profile roast.\
+Prediction temperatures are fixed in code, 150 C for DE, and 200 C for FC. If your machine has significant different values, for all bean origins, feel free to change them before load, DE_TEMP and FC_TEMP, in libESP.h
 
 ![TC4ESP UI](screenshots/TC4ESP-UI1.png "TC4ESP UI")
 
