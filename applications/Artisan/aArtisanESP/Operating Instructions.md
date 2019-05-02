@@ -19,11 +19,12 @@ The right half of row 4, now host either the FC prediction during a manual roast
 
 Buttons new behaviour in simple UI:
 - up/down - control heater or fan, instead pot in manual mode.\
-Long press on up/down keys, when heater control is active, are shortcuts for MIN/MID/MAX OT1. No long press effect for FAN control.\
+Use long press on up/down keys, when heater control is active, as shortcut for MIN/MID/MAX OT1.\
+No long press effect for FAN control.\
 Up key press, in Idle state only, will also start manual roast, with HTR set to MIN_OT1 value, and timer reset.
 - enter key - short press toggle PID on-off in profile mode, do nothing in manual mode\
 Long press resets timer and start profile, or stop roast in either mode
-- mode key, profile browsing and choice, as standard TC4, in Idle phase\
+- mode key, in Idle phase is profile browsing and choice, as for standard TC4\
 During roast acts as UP/DOWN buttons control toggle, between HTR and FAN, will move the "<" pointer on display.
 
 Buttons layout, meaning and their application codes, for the eBay buttons pad
