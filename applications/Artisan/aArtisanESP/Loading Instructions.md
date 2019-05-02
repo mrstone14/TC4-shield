@@ -5,6 +5,7 @@ https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
 - Create a folder in Arduino sketchbooks locations, named aArtisanESP
 - download there all files from .../aArtisanESP/src folder
 - move to Arduino libraries folder, and download there the content of .../aArtisanESP/libraries folder, preserving the structure.
+- ... or, download all as a zip: https://github.com/renatoa/TC4-shield/blob/master/applications/Artisan/aArtisanESP/tags/REL_aArtisanESP_1_0/aArtisanESP.zip, and unpack
 - make desired changes in user.h and espLib.h header files, if any required
 - compile/load
 - if any error, contact me for support.
