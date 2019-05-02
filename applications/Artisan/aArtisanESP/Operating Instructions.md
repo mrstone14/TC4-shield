@@ -28,4 +28,4 @@ During roast acts as UP/DOWN buttons control toggle, between HTR and FAN, will m
 
 Buttons layout, meaning and their application codes, for the eBay buttons pad
 
-![Buttons](screenshots/Buttons.jpg "TC4ESP UI")
+![Buttons](screenshots/Buttons_small.jpg "TC4ESP UI")
