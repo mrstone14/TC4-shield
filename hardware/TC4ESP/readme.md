@@ -15,7 +15,7 @@ And now, explanation of TC4ESP schematic... components description:
     
 - heater SSR - any random fire SSR, only slow PWM support so far, ICC and PAC is work in progress.
     
-    No fan support for now, other than a PWM output, possible, but disabled in actual code.
+    For fan you have a PWM output, equivalent of TC4 IO3, you must fit yourself the fan driver.
 
 - LCD - any cheap 20x4 I2C LCD. Library used for this display: https://github.com/marcoschwartz/LiquidCrystal_I2C
 
