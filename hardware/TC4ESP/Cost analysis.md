@@ -9,9 +9,9 @@ With the minimal configuration above you can connect to Artsan via USB, and moni
 Optional additions:
 - AD849x TC amp board - $4.30 - second temperature channel
 - SSR - $3.47 - for heater control\
-Total for 2 temp and heater control: $20
+Total for 2 temps and heater control: $20
 
-- buttons board - $1.83 and 20x4 LCD - $4.58 - for standalone operations\
+- buttons board - $1.83 and 20x4 LCD - $4.58 - for standalone operating\
 Total for standalone version: $27
 
 - HC-06 BT module - $1.86 - for wifi control via Android app\
