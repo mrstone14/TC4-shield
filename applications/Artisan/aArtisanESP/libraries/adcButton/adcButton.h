@@ -45,6 +45,7 @@
 //            Also changed logic to detect long press events 
 //  20190319: modified for the ebay 5 switches board sold as "Analog Button for Arduino AD Keyboard ..."
 //  20190413: long press timing fix; added keyClicked method
+//  20190504: made rawRead public method, to be able to read button status at startup
 
 #ifndef CBUTTON_H_
 #define CBUTTON_H_
@@ -72,9 +73,9 @@ public:
   boolean keyClick(uint8_t key);
   boolean anyPressed(); // true if any button is pressed
   byte getPressedLongKeys(); // uint8_t key
+  virtual uint8_t rawRead() { return 0; } // should be pure virtual
 
 protected:
-  virtual uint8_t rawRead(){ return 0; } // should be pure virtual
   void debounce();
   uint8_t n; // size of button array
   uint8_t bits;
@@ -98,8 +99,9 @@ public:
    virtual void ledAllOff(){ ledUpdate( 0 ); }
    virtual void ledAllOn(){ ledUpdate( 0x07 ); }
    virtual void ledUpdate( uint8_t b3 );
-protected:
    virtual uint8_t rawRead(); // returns up to 8 bits mask of button pressed
+
+protected:
    uint8_t PEaddr;
    uint8_t LEDstate;
 };
