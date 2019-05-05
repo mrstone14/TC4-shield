@@ -54,7 +54,7 @@
 #include "libESP.h"
 #include "cmndreader.h"
 
-#if defined ESP8266 || defined ESP32#define BANNER_ARTISAN "aArtisanESP 1_0  "
+#if defined ESP8266 || defined ESP32#define BANNER_ARTISAN "aArtisanESP 1_0_1  "
 #endif
 
 #define roastPhase_Idle 0
@@ -70,11 +70,11 @@
 #define BTN_UP 0
 #define BTN_DOWN 1
 #define BTN_ENTER 2
-#define BTN_SETUP 3
+#define BTN_MODE 3
 #define BTN_MASK_UP 1
 #define BTN_MASK_DOWN 2
 #define BTN_MASK_ENTER 4
-#define BTN_MASK_SETUP 8
+#define BTN_MASK_MODE 8
 
 #define MID_OT1 ((MIN_OT1 + MAX_OT1) / 2)
 
@@ -85,6 +85,7 @@ int16_t estDE; // estimated dry end phase time, for default 150C temp
 int16_t estFC; // estimated first crack time, for default 200C temp
 char buffDE[6], buffFC[6];
 byte modeOT = 1;
+bool modeVirTemp = false;
 
 void processCommand(String cmd) {
 	if (cmd.startsWith("OT2;")) {
@@ -132,10 +133,10 @@ void processCommand(String cmd) {
 
 /////////////////////////////////////////
 // Custom buttons behaviour in simple UI
-// - up/down - control heater instead pot in manual mode, long press on up/down are shortcuts for MIN/MID/MAX OT1
+// - up/down - control heater/fan instead pot in manual mode, long press on up/down are shortcuts for MIN/MID/MAX OT1
 // - enter key - short press PID on-off in profile mode, nothing in manual mode
 //             - long press resets timer and start profile, or stop roast in any moment
-// - mode key, as standard TC4, but in Idle only, not allowed during roast
+// - mode key, as standard TC4, but in Idle only, during roast acts as UP/DOWN buttons toggle between HTR and FAN
 /////////////////////////////////////////
 
 void checkButtons() { // take action if a button is pressed
@@ -153,7 +154,6 @@ void checkButtons() { // take action if a button is pressed
 
 				// Serial.println("Dbg case 0 "); 
 			if (buttons.keyClick(BTN_ENTER)) { // button Enter - PID on/off - roast start/stop on long press
-											   // Serial.println("Dbg click enter ");
 				if (roastPhase == roastPhase_Cool && !(longPressKeys == BTN_MASK_ENTER)) { // one more short enter press in Cool phase, to return to Idle
 					roastPhase = roastPhase_Idle;
 					// reset roasting variables
@@ -162,7 +162,10 @@ void checkButtons() { // take action if a button is pressed
 					lcd.setCursor(13, 2);
 					lcd.print(F("       ")); 
 					lcd.setCursor(13, 3);
-					lcd.print(F("       ")); // blank out DE and FC
+					lcd.print(F("       ")); 
+					return;
+				}
+				else if (roastPhase == roastPhase_Preheat && !(longPressKeys == BTN_MASK_ENTER)) { // one short enter press in preheat phase, do nothing
 					return;
 				}
 #ifdef PID_CONTROL
@@ -174,15 +177,14 @@ void checkButtons() { // take action if a button is pressed
 						roastPhase = roastPhase_Roast;
 					}
 				}
-				else {
+				else { // no profile chosen
 					if (myPID.GetMode() == AUTOMATIC) {
 						myPID.SetMode(MANUAL);
 						lcd.setCursor(13, 2);
 						lcd.print(F("       ")); // blank out SP: nnn if PID is off
 					}
-
 					if (longPressKeys == BTN_MASK_ENTER) {
-						if (roastPhase == roastPhase_Idle) {
+						if (roastPhase == roastPhase_Idle || roastPhase == roastPhase_Preheat) {
 							levelOT1 = MIN_OT1;
 							outOT1();
 							roastPhase = roastPhase_Roast;
@@ -198,7 +200,6 @@ void checkButtons() { // take action if a button is pressed
 #endif
 			}
 			else if (longPressKeys == BTN_MASK_DOWN) {
-				// Serial.println("Dbg long down ");
 				if (modeManual) {
 					if (levelOT1 > MID_OT1) processCommand("OT1;MID"); // long press on DOWN lowers power to mid,
 					else if (levelOT1 <= MID_OT1) processCommand("OT1;MIN"); // else lowers power to min, 
@@ -216,11 +217,8 @@ void checkButtons() { // take action if a button is pressed
 				}
 			}
 			else if (longPressKeys == BTN_MASK_UP) {
-				// Serial.print("long up modeManual "); Serial.println(modeManual);
 				if (modeManual) {
-					roastPhase = roastPhase_Roast;
-					//Serial.print("levelOT1 "); Serial.println(levelOT1);
-					//Serial.print("MID_OT1 "); Serial.println(MID_OT1);
+					//roastPhase = roastPhase_Roast;
 					if (levelOT1 < MID_OT1) processCommand("OT1;MID"); // long press on UP raise power to mid, 
 					else if (levelOT1 >= MID_OT1) processCommand("OT1;MAX"); // else next press raise power to max, 
 				}
@@ -234,12 +232,14 @@ void checkButtons() { // take action if a button is pressed
 				else if (modeManual) {
 					processCommand("OT1;UP");
 					if (roastPhase == roastPhase_Idle) {
-						counter = 0;
-						roastPhase = roastPhase_Roast;
+						//counter = 0;
+						roastPhase = roastPhase_Preheat;
+						processCommand("OT1;MID");
 					}
 				}
+				return;
 			}
-			else if (buttons.keyClick(BTN_SETUP)) { // button 4 - CHANGE LCD MODE
+			else if (buttons.keyClick(BTN_MODE)) { // button 4 - CHANGE LCD MODE
 													//Serial.println("Dbg click mode ");
 				if (roastPhase == roastPhase_Idle) { // allow profile change in idle only
 					lcd.clear();
@@ -345,15 +345,18 @@ void updateLCDalt(byte roast_Phase = 255) {
 							 //Serial.print("roast_Phase - counter"); Serial.print(roast_Phase); Serial.print("-"); Serial.println(counter);
 		modeManual = (profile_number == 0 || myPID.GetMode() == MANUAL);
 
-		if (levelOT1 > 0) roast_Phase = roastPhase_Roast; // when roast was been triggered by external commands, like PID; or OT1;
+		if (levelOT1 > 0 && roast_Phase == roastPhase_Idle) roast_Phase = roastPhase_Roast; // when roast was been triggered by external commands, like PID; or OT1;
 
-		if ((roast_Phase == roastPhase_Idle || roast_Phase == roastPhase_Roast) && (counter % 5 == 0) && !(profile_number == 0 && modeManual)) {
+		if ((roast_Phase != roastPhase_Cool) && (counter % 5 == 0) && !(profile_number == 0 && modeManual)) {
 			lcd.print(F("Prof "));
 			lcd.print(profile_number);
 		}
 		else {
 			if (roast_Phase == roastPhase_Idle) {
 				lcd.print(F("Idle  "));
+			}
+			else if (roast_Phase == roastPhase_Preheat) {
+				lcd.print(F("PreHT "));
 			}
 			else if (roast_Phase == roastPhase_Roast) {
 				if ((counter % 3 == 0) && modeManual) {
@@ -381,7 +384,7 @@ void updateLCDalt(byte roast_Phase = 255) {
 					else sprintf(buffDE, ":%01d:%02d", estDE / 60, estDE % 60);
 					lcd.print(buffDE);				
 				}
-				else { // shows FC prediction
+				else if (BT < FC_TEMP) { // shows FC prediction
 					estFC = (FC_TEMP - BT) * 60 / currROR;
 					if (estFC > 0) estFC += counter;
 
@@ -420,11 +423,17 @@ void updateLCDalt(byte roast_Phase = 255) {
 
 			else if (roast_Phase == roastPhase_Cool) {
 				lcd.print(F("Cool  "));
-				lcd.setCursor(13, 3);
-				lcd.print(F("FC"));
-				lcd.print(buffFC);
+				//lcd.setCursor(13, 3);
+				//lcd.print(F("FC"));
+				//lcd.print(buffFC);
 			}
 		}
+
+		if (modeVirTemp && (counter % 4 == 0)) { // flash virtual temperatures mode
+			lcd.setCursor(6, 0);
+			lcd.print(F("VirTmp"));
+		}
+
 	} // end LCD mode 0
 } // end update LCD
 
@@ -474,11 +483,40 @@ void setupESP() {
 	}
 #endif
 
-	// BT alternate serial activation
+	byte btn = buttons.rawRead();
+
+	if (btn > 0 ) {
+		lcd.setCursor(0, 3);
 #ifdef ANDROID
-#ifdef ESP8266
-	// BT adapter second serial additional setup, if any
-	int adc = analogRead(A0);
+		// BT adapter second serial additional setup, if any
+		if (btn == BTN_MASK_MODE) { // buttons.keyClick(BTN_MODE)) {
+			// activate BT if pressing Mode button during start
+#ifdef ESP8266			// BT alternate serial activation
+			Serial.end(); // stop USB serial
+			lcd.print(F("BlueTooth enabled"));
+			Serial.begin(9600); // start at low BT speed
+			Serial.swap(); // swap to alternate pins set, where is connected BT adapter
+							// this way the USB serial is free for sketch updates without any phisical switch
+
+			log4Android = true;
+			log4Artisan = false;
+#elif defined ESP32 // ESP32		// ... TBD using BT serial#endif // platforms choice for serial BT
+
+		} // end btn Mode pressed at startup = activate BT
+
+#endif // Android
+
+		else if (btn == BTN_MASK_DOWN) { // buttons.keyClick(BTN_DOWN)) {
+			// activate virtual TC if pressing Down button during start
+			modeVirTemp = true;
+			roastPhase = roastPhase_Roast;
+			lcd.print(F("Virtual temperatures"));
+		}
+
+		if (btn > 0) delay(1000); // delay see mode change
+
+	}
+	/*int adc = analogRead(A0);
 
 	if (adc < 512) { // activate BT if pressing Mode button during start
 					 // Serial.print("button catch");
@@ -499,15 +537,7 @@ void setupESP() {
 	else {
 		log4Artisan = true;
 		log4Android = false;
-	}
-#elif defined ESP32 // ESP32
-	// ... TBD using BT serial
-#else 
-#ifdef ARTISAN
-	log4Artisan = true;
-#endif
-#endif // platforms
-#endif // Android
+	}*/
 
 	delay(1000);
 	lcd.clear();
@@ -517,3 +547,29 @@ void setupESP() {
 	next_loop_time *= 1000;
 
 }
+
+
+/////////////////////////////////////////
+// use ADC3/4 ports of MCP3424 for pots (analog control)
+// for platforms with not enough available ADCs
+/////////////////////////////////////////
+
+#if defined ANLG1ADC3 || defined ANLG2ADC4
+int adcRead(byte port) {
+	byte k = 0;
+#ifdef ANALOGUE1
+	if (port == anlg1) k = 3;
+#endif
+#ifdef ANALOGUE2
+	if (port == anlg2) k = 4;
+#endif
+	if (k > 0) {
+		--k;
+		adc.nextConversion(k); // start ADC conversion on physical channel k
+		checkStatus(60); // give the chips time to perform the conversions
+		int32_t v = adc.readuV() / 4; // retrieve microvolt sample from MCP3424  
+		v /= 32; // map the 15 bit value, corresponding to 0-2V pot range, to Arduino compatible 10 bit value range
+		return v;
+	}
+}
+#endif
