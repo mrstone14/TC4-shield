@@ -5,7 +5,7 @@ Because in this architecture there could be no pots, due to ESP 8266 lack of ADC
 There are two UI provided, at the moment of first draft only the simple UI is available, the extended UI is still work in progress.
 
 There are some display changes, listed below, for the simple UI:
-- the most significant: works on 20x4 displays only
+- the most significant: works on 20x4 I2C displays only
 - the AT temperature area was been replaced by a roast phase/mode indicator. In that area you can read the following:\
 Roast phase: Idle, Roast, Cool, for simple UI, and more for extended version: Charge, TP, Drying, Yellow, Dev\
 Mode: Man of Prof #, alternating with the roast phase above, to show manual mode or the number of profile used
@@ -22,9 +22,9 @@ Buttons new behaviour in simple UI:
 - up/down - control heater or fan, instead pot in manual mode.\
 Use long press on up/down keys, when heater control is active, as shortcut for MIN/MID/MAX OT1.\
 No long press effect for FAN control.\
-Up key press, in Idle state only, will also start manual roast, with HTR set to MIN_OT1 value, and timer reset.
+Up key press, in Idle state only, will start preheat, with HTR set to MID_OT1 value.
 - enter key - short press toggle PID on-off in profile mode, do nothing in manual mode\
-Long press resets timer and start profile, or stop roast in either mode
+Long press resets timer and start roast, or stop roast, in either mode.
 - mode key, in Idle phase is profile browsing and choice, as for standard TC4\
 During roast acts as UP/DOWN buttons control toggle, between HTR and FAN, will move the "<" pointer on display.
 
