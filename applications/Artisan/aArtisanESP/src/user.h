@@ -114,8 +114,8 @@
 #define MIN_OT2 0 // Set output % for lower limit for OT2.  0% power will always be available
 #define MAX_OT2 100 // Set output % for upper limit for OT2
 
-#define MIN_IO3 MIN_OT1 // 0 // Set output % for lower limit for IO3.  0% power will always be available
-#define MAX_IO3 MAX_OT1 // 100  // Set output % for upper limit for IO3
+#define MIN_IO3 0 // Set output % for lower limit for IO3.  0% power will always be available
+#define MAX_IO3 100  // Set output % for upper limit for IO3
 
 // cut power to Heater if fan duty is less than HTR_CUTOFF_FAN_VAL (to protect heater in air roaster). Set to 0 for no cutoff
 #define HTR_CUTOFF_FAN_VAL 0
@@ -179,15 +179,16 @@
 // Output Pin Setup
 #ifdef ESP8266 
   // phase angle control and integral cycle control outputs
-  #define OT1 16 // OT1 is on pin D0 for ESP8266
-  //#define OT2 ... // OT2 is on pin D?? for ESP8266
+  //#define OT1 D4 // OT1 is on pin D4/GPIO2 
+  #define OT1 D0 // OT1 is on pin D0/GPIO16 
+  //#define OT2 ... // OT2 is on pin D?? 
   #define OT_PAC OT1 // phase angle control on OT2 (AC fan, usually)
   #define OT_ICC OT1 // integral cycle control on OT1 (AC heater, usually)
 #ifdef ARDUINO_ESP8266_NODEMCU
-  #define LED_PIN 2 // on NodeMCU only
-  // also, on NodeMCU LED logic is reversed, LOW = light
+  //#define LED_PIN LED_BUILTIN // on NodeMCU only
+  // on NodeMCU LED logic is reversed, LOW = light
 #else
-  #define LED_PIN 16 // LED pin is 16 for other ESP8266 boards
+  #define LED_PIN LED_BUILTIN // LED pin is D0/GPIO16 for other ESP8266 boards
 #endif // ARDUINO_ESP8266_NODEMCU
 #elif defined ESP32
 // ... TBD
