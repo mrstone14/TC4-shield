@@ -25,9 +25,12 @@ No long press effect for FAN control.\
 Up key press, in Idle state only, will start preheat, with HTR set to MID_OT1 value.
 - enter key - short press toggle PID on-off in profile mode, do nothing in manual mode\
 Long press resets timer and start roast, or stop roast, in either mode.
-- mode key, in Idle phase is profile browsing and choice, as for standard TC4\
-During roast acts as UP/DOWN buttons control toggle, between HTR and FAN, will move the "<" pointer on display.
+- mode key: 
+in Idle phase acts as profile browsing and choice, like for standard TC4\
+During roast acts as UP/DOWN buttons target toggle, between HTR and FAN. The "<" pointer near the HTR/FAN value serve as a visual hint of which output will be controlled by UP/DOWN buttons.\
+At startup, if powering TC4ESP with mode button pressed, Bluetooth will be activated, and USB serial output for Artisan disabled.
 
 Buttons layout, meaning and their application codes, for the eBay buttons pad
 
 ![Buttons](screenshots/Buttons_small.jpg "TC4ESP UI")
+
