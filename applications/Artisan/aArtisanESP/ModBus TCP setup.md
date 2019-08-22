@@ -8,7 +8,7 @@ Press OK, and the dialog below will appear:
 
 Fill all highlighted areas with the values as in image. The meaning of various settings will be described below:
 - Slave 1 - is the ModBus Slave device id of TC4ESP
-- Input 1 and 2 are for the two main temperatures, ET (register 0) and BT(register 1)
+- Input 1 and 2 are for the two main temperatures, ET (register 0) and BT(register 1) Input 3 and 4 and associated registers 2/3 are reserved for the other two temperatures, if all 4 channels are in use.
 - function 3 - read holding register
 - divide by 1/10 is required because ModBus send values as integers, 123.4 degrees are sent as 1234, and a division by 10 is required to scale the value correctly\
 same for SV of PID
@@ -28,6 +28,6 @@ If this happens, then you can start Artisan temperatures monitoring and see the 
 
 To activate the heater/fan controls, a further and last step is required, select Events... from same Config menu, then Sliders tab, and input the commands required for transmiting the sliders values to TC4ESP via ModBus registers 4 and 5, as in the image below.
 
-![MB Setup 3](screenshots/MB Setup 3.jpg "MB Setup 3")
+![MB Setup 3](screenshots/MB_Setup_3.jpg "MB Setup 3")
 
-If everyting was been done, then you should be able to control heater/fan % using the associated slider in Artisan, and see the effect on TC4ESP display.
+If everyting was been done right, then you should be able to control heater/fan % using the associated slider in Artisan, and see the effect on TC4ESP display.
