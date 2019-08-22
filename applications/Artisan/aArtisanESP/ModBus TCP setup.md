@@ -1,6 +1,6 @@
 Launch Artisan, and select Device... from Config menu. The dialog below should appear, select ModBus as highlighted below:
 
-![MB Setup 1](screenshots/MB Setup 1.jpg "MB Setup 1")
+![MB Setup 1](screenshots/MB Setup 1.png "MB Setup 1")
 
 Press OK, and the dialog below will appear:
 
