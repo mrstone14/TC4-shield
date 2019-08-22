@@ -13,8 +13,8 @@ And now, explanation of TC4ESP schematic... components description:
     
     This library, along with the resistor ladder concept, can be used also with the original TC4 shield, changing the ADC GPIO pin accordingly.
     
-- heater SSR - any random fire SSR, only slow PWM support so far, ICC and PAC is work in progress.
-    
+- heater SSR - any random fire SSR, only slow PWM (and ICC) support so far, PAC is work in progress.
+    Update: starting with V1.1, ICC was been implemented, using a ZCD-SSR device called RobotDyn dimmer.
     For fan you have a PWM output, equivalent of TC4 IO3, you must fit yourself the fan driver.
 
 - LCD - any cheap 20x4 I2C LCD. Library used for this display: https://github.com/marcoschwartz/LiquidCrystal_I2C
