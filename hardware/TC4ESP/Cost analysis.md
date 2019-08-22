@@ -16,7 +16,7 @@ Total for standalone version: $27
 
 - HC-06 BT module - $1.86 - for wifi control via Android app\
 Total for BT version: $22\
-...or, all bells configuration: $29\
+...or, all bells configuration: $29
 
 Starting with V1.1 Wifi connection is possible for Artisan, without a BT adapter.
 
