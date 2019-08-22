@@ -4,7 +4,7 @@ Launch Artisan, and select Device... from Config menu. The dialog below should a
 
 Press OK, and the dialog below will appear:
 
-![MB Setup 2](screenshots/MB Setup 2.jpg "MB Setup 2")
+![MB Setup 2](screenshots/MB_Setup_2.jpg "MB Setup 2")
 
 Fill all highlighted areas with the values as in image. The meaning of various settings will be described below:
 - Slave 1 - is the ModBus Slave device id of TC4ESP
