@@ -24,7 +24,7 @@ Last area to setup is for the Wifi parameters:
 Press OK to conclude this dialog
 
 If the TC4ESP was been loaded with a sketch compiled with MODBUS_TCP option selected in user.h, then at start you should see the board IP as part of the splash screen\
-If this happens, then you have to instruct the Wifi adapter of the machine running Artisan scan the network, look for "ESP ModBus TCP", and connect to this network. Warning: when doing this the Internet access of the Artisan machine will be lost ! Remember connect your home router when the roasting session ends.
+If this happens, then you have to instruct the Wifi adapter of the machine running Artisan scan the network, look for "ESP ModBus TCP", and connect to this network. **Warning**: when doing this, the Internet access of the Artisan machine will be lost ! Remember connect your home router when the roasting session ends.
 When all the above are met, press On in Artisan and see temperatures values starting to show.
 
 To activate the manual heater/fan controls, a further and last step is required, select Events... from same Config menu, then Sliders tab, and input the commands required for transmitting the sliders values to TC4ESP via ModBus registers 4 and 5, as in the image below.
