@@ -1,4 +1,3 @@
-``
 - D0(IO16) - OT1, heater control
 - D1(IO5)  -  I2C, SCL
 - D2(IO4)  -  I2C, SDA
@@ -9,4 +8,3 @@
 - D7(IO13) - BT Rx
 - D8(IO15) - BT Tx
 - A0       - ADC input, for buttons pad
-``
