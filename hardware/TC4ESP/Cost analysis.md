@@ -25,7 +25,7 @@ All prices are eBay.com, from Asia, mostly with free shipping worldwide.
 At the moment of the last edit of this document, on 20-04-23, the eBay seller that stock the most components from the list above is chips-fans. Possible not the best prices, but the most coplete components list from a single source:\
 https://www.ebay.co.uk/str/chips-fans
 
-In stock at the date of edit: \
+In stock at the date of edit: 
 - NodeMcu V3 Lua CH340G ESP8266 board (273270737176), 
 - AD8495 K-Type Thermocouple Amplifier ( 272881795654 ),
 - MCP3424 Digital I2C ADC-4 Channel ( 272644239450 ),
