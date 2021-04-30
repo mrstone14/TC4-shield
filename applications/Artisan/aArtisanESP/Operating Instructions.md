@@ -1,8 +1,29 @@
 Operating TC4ESP
 ================
 
-Because in this architecture there could be no pots, due to ESP 8266 lack of ADC, the 4 buttons logic has been changed/improved, in order to replace the pots functionality and also add new features.\
-There are two UI provided, at the moment of first draft only the simple UI is available, the extended UI is still work in progress.
+Because this architecture doesn't feature pots, due to ESP 8266 lack of enough ADC channels, the 4 buttons logic has been changed/improved, in order to replace the pots functionality, and also add new features.\
+
+In order to better understand the new UI, first we will meet the buttons layout and meaning:
+
+- up/down - control heater or fan, instead pot in manual mode.\
+Use long press on up/down keys, when heater control is active, as shortcut for MIN/MID/MAX OT1.\
+No long press effect for FAN control.\
+Up key short press, in Idle state only, will start preheat, for a setpoint value depending on beans processing: 170 C for naturals, 180 C for washed. 
+This value can be changed during preheat using up/down keys.\
+
+- enter key - short press toggle PID on-off in profile mode, or auto/manual modes, if no profile used;\
+short press in Brown(ing) phase signals start of FC and switch to Dev(elopment) phase, startong also DTR specific computations and display;
+Long press in idle/preheat/charge phases resets timer and start roast, or stop roast, in roast phases mode.
+
+- mode/settings key: 
+in Idle phase switch to a completely new Settings screen, detailed in other document; you can find there profile browsing and choice, as for standard TC4;\
+During roast acts as UP/DOWN buttons target toggle, between HTR and FAN. The "<" pointer near the HTR/FAN value serve as a visual hint of which output will be controlled by UP/DOWN buttons.\
+
+Buttons layout and their application codes, for the eBay buttons pad:
+
+![Buttons](screenshots/Buttons_small.jpg "TC4ESP UI")
+
+
 
 There are some display changes, listed below, for the simple UI:
 - the most significant: works on 20x4 I2C displays only
@@ -17,20 +38,4 @@ The right half of row 4, now host either the FC prediction during a manual roast
 Prediction temperatures are fixed in code, 150 C for DE, and 200 C for FC. If your machine has significant different values, for all bean origins, feel free to change them before load, DE_TEMP and FC_TEMP, in libESP.h
 
 ![TC4ESP UI](screenshots/TC4ESP-UI1.png "TC4ESP UI")
-
-Buttons new behaviour in simple UI:
-- up/down - control heater or fan, instead pot in manual mode.\
-Use long press on up/down keys, when heater control is active, as shortcut for MIN/MID/MAX OT1.\
-No long press effect for FAN control.\
-Up key press, in Idle state only, will start preheat, with HTR set to MID_OT1 value.
-- enter key - short press toggle PID on-off in profile mode, do nothing in manual mode\
-Long press resets timer and start roast, or stop roast, in either mode.
-- mode key: 
-in Idle phase acts as profile browsing and choice, like for standard TC4\
-During roast acts as UP/DOWN buttons target toggle, between HTR and FAN. The "<" pointer near the HTR/FAN value serve as a visual hint of which output will be controlled by UP/DOWN buttons.\
-At startup, if powering TC4ESP with mode button pressed, Bluetooth will be activated, and USB serial output for Artisan disabled.
-
-Buttons layout, meaning and their application codes, for the eBay buttons pad
-
-![Buttons](screenshots/Buttons_small.jpg "TC4ESP UI")
 
