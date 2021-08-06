@@ -63,6 +63,8 @@
 #include "driver/adc.h"
 #endif
 
+// #define BUTTONS_DEBUG
+
 // ------------------------------------------ base class methods
 adcButtonBase::adcButtonBase() {
   n = 0;
@@ -86,7 +88,9 @@ byte adcButtonBase::getPressedLongKeys() { // uint8_t key
 	if (stableStart > 0 && (millis() - stableStart) > LONG_PRESS_INTERVAL) {
 		nextCheck = millis() + 100; // inactive window after long press, to allow button finger release, and no double click
 		stableStart = 0; // reset long press start
-		//Serial.print("# long press key info read and reset "); Serial.println(prevstable);
+#ifdef BUTTONS_DEBUG
+		Serial.print("# long press key info read and reset "); Serial.println(prevstable);
+#endif
 		return prevstable;
 	} else {
 		stableStart = 0; // reset long press start
@@ -102,11 +106,15 @@ uint8_t adcButtonBase::readButtons() {
 		// check if the key that caused previous long press trigger has debounced
 		byte buttons = rawRead();
 		if (prevstable & buttons) {
-			//Serial.print("# key still pressed "); Serial.println(prevstable & buttons);
+#ifdef BUTTONS_DEBUG
+			Serial.print("# key still pressed "); Serial.println(prevstable & buttons);
+#endif
 			return false;
 		}
 		else {
+#ifdef BUTTONS_DEBUG
 			Serial.print("# long press key released "); Serial.println(millis());
+#endif
 			blnLongPressPending = false;
 		}
 	}
@@ -119,19 +127,27 @@ uint8_t adcButtonBase::readButtons() {
 		// required for long press detection
 		if (changed > 0 && changed == stable) { // start long press interval counting
 			stableStart = ms;
-			//Serial.print("# started stable interval at "); Serial.println(ms);
+#ifdef BUTTONS_DEBUG
+			Serial.print("# started stable interval at "); Serial.println(ms);
+#endif
 		}
 		else if (changed == 0 && stable > 0 && stableStart > 0 && ((ms - stableStart) > LONG_PRESS_INTERVAL)) {// forced return on long press
-			// Serial.print("# forced exit, stable-prevstable "); Serial.print(stable); Serial.println(-prevstable);
+#ifdef BUTTONS_DEBUG
+			Serial.print("# forced exit, stable-prevstable "); Serial.print(stable); Serial.println(-prevstable);
+#endif
 			//stableStart = 0; // reset long press start
 			changed = stable;
 			stable = 0;
 			blnLongPressPending = true;
-			//Serial.print("# forced exit, returning "); Serial.println((changed > 0 && stable == 0));
+#ifdef BUTTONS_DEBUG
+			Serial.print("# forced exit, returning "); Serial.println((changed > 0 && stable == 0));
+#endif
 		}
-		//else {
-		//	Serial.println("# changed " + (String)changed + ", stable " + (String)stable + ", stableStart " + (String)stableStart);
-		//}
+		else {
+#ifdef BUTTONS_DEBUG
+			Serial.println("# changed " + (String)changed + ", stable " + (String)stable + ", stableStart " + (String)stableStart);
+#endif
+		}
 		return (changed > 0 && stable == 0);
 	}
 	else return 0;  // if a new value was not read, than nothing can change
@@ -167,7 +183,11 @@ void adcButtonPE16::begin( uint8_t N, uint8_t addr ) {
 	adc1_config_width(ADC_WIDTH_BIT_10);
 	// set channel attentuation to 10 dB, to match ESP8266 3.3V scale
 	adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_11);
+
 #endif
+
+	nextCheck = millis();
+	stable = rawRead(); // to ensure a stable value at boot if starting with any button pressed
 
 }
 
@@ -183,12 +203,21 @@ uint8_t adcButtonPE16::rawRead() {
 	int adc = adc1_get_raw(ADC1_CHANNEL_0);
 #endif
 
+#ifdef BUTTONS_DEBUG
+	if (adc < 1000) { Serial.print("# switch adc  "); Serial.print(adc); }
+#endif
+
 	// the code below is specific to the resistor ladder you are using, and should be modified accordingly.
 	// 20190319 - modified for the ebay 5 switches board sold as 
 	// "Analog Button for Arduino AD Keyboard ..."
+	// this boards permanently outputs 3.3V = 1024 ADC value
+	// and the following voltages when various buttons are pressed:
+	// 0 = UP, 0.45V = Enter, 1V = Settings, 1.6V = DOWN
 
 	bits = ( adc / 100); // translate adc values in the hundreds range, to a single digit switch index
-	//if (adc < 1000) { Serial.print("# switch adc-bits "); Serial.print(adc); Serial.println(-bits); }
+#ifdef BUTTONS_DEBUG
+	if (adc < 1000) { Serial.print(" bits "); Serial.println(bits); }
+#endif
 
 	// map physical switches index to TC4 logical switches mask
 	switch (bits) {
