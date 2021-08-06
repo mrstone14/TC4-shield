@@ -126,7 +126,7 @@
 #define pwmN4sec 62499 // 4.0000 sec
 
 #define pwmOff   0       // zero period effectively turns off timer
-#define pwmDutyMax  100  // maximum duty cycle is 100%
+#define pwmDutyMax 100 // RATIO_M  // maximum duty cycle resolution is 200%
 #define pwmDutyError  0  // in case requested duty > 100
                          // change to 100 if safe for your application
 
@@ -134,8 +134,11 @@
 #define pwmOutA 9   // pin 9
 #define pwmOutB 10  // pin 10
 #else
-#define pwmOutA 16
-//#define pwmOutB 10  // pin 10
+// extern const uint8_t OT1, OT2;
+#define pwmOutA D5 // OT1
+#if defined OT2 // && !defined CONFIG_PAC4
+//#define pwmOutB OT2  // pin 10
+#endif // defined OT2
 #endif
 
 // ---------------------------------------------------
@@ -150,6 +153,9 @@ class PWM16 {
                                                          // channels A and B
                                                          // duty = 0 to 100
     unsigned int GetTOP(); // returns TOP value for counter
+	//char * getMessage();
+	//void setMessage(char msg);
+
   private:
     unsigned int _pwmF;
 
@@ -158,7 +164,7 @@ class PWM16 {
 // definitions for PWM frequency selection on IO3
 
 #if defined ESP8266
-#define IO3_PIN 15 // GPIO15 for ESP8266
+#define IO3_PIN D4 // D4/GPIO2 for ESP8266
 
 #define IO3_FASTPWM 0 //_BV(COM2A1) | _BV(COM2B1) | _BV(WGM21) | _BV(WGM20) // fast PWM
 #define IO3_PCORPWM 1 //_BV(COM2A1) | _BV(COM2B1) | _BV(WGM20) // phase correct PWM
@@ -201,7 +207,8 @@ class PWM16 {
 class PWM_IO3 {
   public:
     void Setup( uint8_t pwm = IO3_FASTPWM, uint8_t prescale = IO3_PRESCALE_1024 );
-    void Out( uint8_t duty );
+	void Out(uint8_t duty);
+	//void Out( uint8_t duty, uint8_t duty_pin = IO3_PIN); // custom version for other PWM output than IO3
   private:
     uint8_t _prescale;
     uint8_t _pwm_mode;

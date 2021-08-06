@@ -40,49 +40,109 @@
 #include "PWM16.h"
 
 #ifdef ESP8266
+
+#define TIMER_INTERVAL_MS      5
+
 #include <Ticker.h>  //Ticker Library
 
 Ticker slowPWM;
-byte pwmACounter = 0;
-byte pwmA;
-byte pwmBCounter = 0;
-byte pwmB;
-
-float pwmCycle;
-
-bool pwmOffset50; // used for parallel diode mod, when Pwm range is always 50-100%
-byte onoffA; // number of cycles in ON state
-
-void changeState() {
-	if (pwmA == 0 || pwmCycle == 0) {
-		pinMode(pwmOutA, INPUT);
-	}
-	else {
-		pwmACounter += 1;
-		if (pwmACounter <= pwmCycle * (float)pwmA)
-			digitalWrite(pwmOutA, 1);
-		else if (pwmACounter < (100.0 * pwmCycle))
-			digitalWrite(pwmOutA, 0);
-		else
-			pwmACounter = 0;
-	}
+//byte pwmACounter = 0;
+volatile byte pwmA;
+//byte lastPWMA;
+//byte next_change_A; 
+//byte next_status_A; 
+volatile bool pwmAchanged = false;
+// unsigned long pwmACounter;
+volatile uint16_t pwmA1PulseLen , pwmA0PulseLen;
 
 #ifdef pwmOutB
-	if (pwmB == 0) {
-		pinMode(pwmOutB, INPUT);
-	}
-	else {
-		pwmBCounter += 1;
-		if (pwmBCounter <= pwmB)
-			digitalWrite(pwmOutB, 1);
-		else if (pwmBCounter < 100)
-			digitalWrite(pwmOutB, 0);
-		else
-			pwmBCounter = 0;
-	}
+byte pwmBCounter = 0;
+byte pwmB;
 #endif // pwmOutB
 
+volatile float pwmCycle;
+
+bool pwmOffset50; // used for parallel diode mod, when Pwm range is always 50-100%
+volatile unsigned long lastChangeStateMs;
+volatile byte psA;
+volatile int offset;
+
+volatile uint32_t pwmOutAStatus = 0;
+static char hdr[50];
+
+static bool started = false;
+//#define PWM_DEBUG
+
+void changeStateA() {
+
+	if (pwmA == 0 || pwmCycle == 0) {
+		digitalWrite(pwmOutA, 0);
+		psA = 0;
+		//pinMode(pwmOutA, INPUT);
+		return;
+	}
+
+	if (pwmAchanged) {
+		pwmA1PulseLen = pwmCycle * (float)pwmA * 100 / pwmDutyMax * 10 - 1;
+		pwmA0PulseLen = pwmCycle * 1000 - pwmA1PulseLen;
+		//digitalWrite(pwmOutA, 0);
+		//if (psA == 1) Serial.println();
+#ifdef PWM_DEBUG
+		Serial.print(millis()); Serial.print('\t'); Serial.print(pwmA); Serial.print("\t\t\t\t\t\t"); Serial.println(pwmA1PulseLen);
+#endif // PWM_DEBUG
+		pwmAchanged = false;
+		lastChangeStateMs = millis();
+		psA = digitalRead(pwmOutA);
+		return;
+	}
+
+	//if (millis() - lastChangeStateMs > 20) {
+	int lasttick = millis() - lastChangeStateMs;
+	if (lasttick < TIMER_INTERVAL_MS - 1) return;
+
+	lastChangeStateMs = millis();
+
+	byte psA = digitalRead(pwmOutA);
+#ifdef PWM_DEBUG
+	Serial.print(psA);
+#endif
+	unsigned long pulse = millis() % (int)(pwmCycle * 1000);
+	if (pulse >= 200) pulse -= 200; else pulse += 800;
+	//Serial.print("pls: ");  Serial.print(pulse); Serial.print("; 1len: ");  Serial.print(pwmA1PulseLen); Serial.print("; ofs: ");  Serial.print(offset); Serial.print("; sA: "); Serial.println(psA); // Serial.print('-');
+	if (pulse >= 10 && pulse < pwmA1PulseLen && psA == 0) { // 
+			digitalWrite(pwmOutA, 1);
+			psA = 1;
+#ifdef PWM_DEBUG
+			//Serial.println(millis());
+#endif
+			if (pulse <= 20) offset = pulse; else offset = 0;
+			sprintf(hdr, "%d\t\t%d\t%d\t", millis(), pulse, psA);
+	} // switch to 1
+	else if (psA == 1 && pulse >= (pwmA1PulseLen + offset)) {
+			digitalWrite(pwmOutA, 0);
+			psA = 0;
+#ifdef PWM_DEBUG
+			Serial.println(millis());
+			Serial.print(hdr);
+			Serial.print(millis()); Serial.print('\t'); Serial.print(pulse); Serial.print('\t'); Serial.print(psA); Serial.print('\t'); Serial.println(pulse - offset); // Serial.print('-');
+#endif
+	} // switch to 0
+	else {
+			//Serial.print("pulse: ");  Serial.print(pulse); Serial.print("; psA: "); Serial.println(psA); // Serial.print('-');
+			// do nothing, already right level
+			// digitalWrite(pwmOutA, psA == 0 ? 1 : 0);
+	}
+
+} // end changeState
+
+#ifdef pwmOutB
+void changeStateB() {
+	// ... TBD copy and adapt code from above
 }
+#endif // pwmOutB
+
+
+char timerMessage[50];
 
 #endif // ESP8266
 
@@ -91,7 +151,7 @@ void changeState() {
 // Constructor
 
 PWM16::PWM16() {
-  _pwmF = 0;
+  _pwmF = pwmN2sec; // default 2 sec
 }
 
 
@@ -123,10 +183,15 @@ void PWM16::Setup( unsigned int pwmF ) {
 void PWM16::Reset() {
 
 #ifdef ESP8266
+	noInterrupts();
 	slowPWM.detach();
-	pinMode(pwmOutA, INPUT);
+	digitalWrite(pwmOutA, 0);
+	started = false;
+	//pinMode(pwmOutA, INPUT);
+	interrupts();
 #ifdef pwmOutB
-	pinMode(pwmOutB, INPUT);
+	digitalWrite(pwmOutB, 0);
+	//pinMode(pwmOutB, INPUT);
 #endif // pwmOutB
 #elif defined ESP32
 	// ... TBD
@@ -151,48 +216,54 @@ void PWM16::Reset() {
 // dutyA = 0 and dutyB = 0 turns off timer 1
 //
 
-void PWM16::Out( unsigned int dutyA, unsigned int dutyB ){
+void PWM16::Out(unsigned int dutyA, unsigned int dutyB) {
 
-  unsigned long nn;
-  unsigned int nA;
-  unsigned int nB;
-  unsigned long pwmN1;
+	unsigned long nn;
+	unsigned int nA;
+	unsigned int nB;
+	unsigned long pwmN1;
 
-  // trap logic errors safely
-  if( dutyA > pwmDutyMax ) dutyA = pwmDutyError;
-  if( dutyB > pwmDutyMax ) dutyB = pwmDutyError;
-  
-  // special case: force no output for zero duty cycle
-  // otherwise will get 1 clock cycle ON in most modes
-  if( dutyA != 0 ) pinMode( pwmOutA, OUTPUT ); else pinMode( pwmOutA, INPUT );
+	// trap logic errors safely
+	if (dutyA > pwmDutyMax) dutyA = pwmDutyError;
 #ifdef pwmOutB
-  if (dutyB != 0) pinMode(pwmOutB, OUTPUT); else pinMode(pwmOutB, INPUT);
+	if (dutyB > pwmDutyMax) dutyB = pwmDutyError;
+#endif // pwmOutB
+
+	// special case: force no output for zero duty cycle
+	// otherwise will get 1 clock cycle ON in most modes
+	if (dutyA != 0) pinMode(pwmOutA, OUTPUT); else pinMode(pwmOutA, INPUT);
+#ifdef pwmOutB
+	if (dutyB != 0) pinMode(pwmOutB, OUTPUT); else pinMode(pwmOutB, INPUT);
 #endif // pwmOutB
 
 
-  // change timer registers only if there is something to do
-  if( dutyA != 0 || dutyB != 0 ) {
-
 #ifdef ESP8266
+	if (pwmA == dutyA) return; // same value, no change
+
 	pwmA = dutyA;
 	pwmCycle = (float)_pwmF / (float)pwmN1Hz;
+	pwmAchanged = true;
 	/*if (pwmOffset50)
 		onoffA = pwmCycle * (float)(pwmA - 50);
 	else
 		onoffA = pwmCycle * (float)pwmA;*/
 
-	slowPWM.attach_ms(10, changeState);
+	slowPWM.attach_ms(TIMER_INTERVAL_MS, changeStateA);
+
 #elif defined ESP32
-	  // ... TBD
+	// ... TBD
 #else // Arduino
-	pwmN1 = _pwmF + 1;
-    nn = dutyA;  nn *= pwmN1 ; nn /= 100; nA = nn;
-    nn = dutyB;  nn *= pwmN1 ; nn /= 100; nB = nn;
-    OCR1A = nA;      // double buffered registers
-    OCR1B = nB;      // change effective only after TCNT1 next reaches TOP
-#endif // platform dependent code
+	// change timer registers only if there is something to do
+	if (dutyA != 0 || dutyB != 0) {
+		pwmN1 = _pwmF + 1;
+		nn = dutyA;  nn *= pwmN1; nn /= 100; nA = nn;
+		nn = dutyB;  nn *= pwmN1; nn /= 100; nB = nn;
+		OCR1A = nA;      // double buffered registers
+		OCR1B = nB;      // change effective only after TCNT1 next reaches TOP
 	}
-}
+#endif // platform dependent code
+  
+} // end Out
 
 // -------------------------------------------------------------------------
 // returns TOP value for counter
@@ -200,6 +271,15 @@ void PWM16::Out( unsigned int dutyA, unsigned int dutyB ){
 unsigned int PWM16::GetTOP () {
   return _pwmF;
 }
+
+//char * PWM16::getMessage() {
+//	return timerMessage;
+//}
+
+//void PWM16::setMessage(char msg) {
+//	timerMessage[0] = msg;
+//}
+
 
 // ------------------------------------------- PWM_IO3 methods
 
@@ -229,9 +309,15 @@ void PWM_IO3::Setup( uint8_t pwm_mode, uint8_t prescale ) {
 }
 
 // output
-void PWM_IO3::Out( uint8_t duty ) {
+void PWM_IO3::Out(uint8_t duty) {
 
-	analogWrite( IO3_PIN, duty );
+	analogWrite(IO3_PIN, duty);
 
 }
+
+/*void PWM_IO3::Out( uint8_t duty, uint8_t duty_pin) {
+
+	analogWrite(duty_pin, duty );
+
+}*/
 
