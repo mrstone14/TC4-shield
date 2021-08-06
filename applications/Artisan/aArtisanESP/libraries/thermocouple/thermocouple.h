@@ -2,9 +2,11 @@
 // Version 20110615
 // Revision history:
 //  20120126: Compatibility with Arduino 1.0
-//  20190301: optimised by adding ESP8266 compatibility and conditional compiling for unused TC types, to save memory, by RenatoA
+
+// New Version:  starting with 2019, by RenatoA
+//  20190301: optimised by adding ESP8266 compatibility and conditional compiling for unused TC types, to save memory
 //  20190403: added CJC as an option, default false for linear model, true for others
-//  20190418: added ESP32 support
+//  20210806: added support for Pt100 RTD sensor (non-thermocouple)
 
 
 // *** BSD License ***
@@ -56,10 +58,11 @@
 //#define usingK
 //#define usingT
 //#define usingJ
+#define usingPt
 
-#define TC_RANGE_ERR 16000.0
 #define C_TO_F(x) ( 1.8 * x + 32.0 )
 #define F_TO_C(x) ( ( x - 32.0 ) / 1.8 )
+#define TC_RANGE_ERR -1 // C degrees  // 16000.0
 
 typedef float FLOAT;
 typedef float PFLOAT;
@@ -94,10 +97,10 @@ class tcLinear : public tcBase { // basic linear approximation
     tcLinear( FLOAT mVperC); //
     FLOAT Temp_C( FLOAT mV );
 	// min/maxe values adjusted AD849x tc amplifier range
-    virtual FLOAT mv_min(){ return -5; }
+    virtual FLOAT mv_min(){ return 0; }
     virtual FLOAT mv_max(){ return 2000.00; }
     virtual FLOAT C_max() { return 400.00; }
-    virtual FLOAT C_min() { return -1; }
+    virtual FLOAT C_min() { return 0; }
   protected:
     virtual FLOAT absTemp_C( FLOAT mV );   // returns temperature (referenced to 0C) for mV
     virtual FLOAT absMV_C( FLOAT C );
@@ -176,6 +179,36 @@ class typeJ : public tcBase {
 	bool CJC = true;
 };
 #endif // using J
+
+#ifdef usingPt
+// ----------------- Pt100
+//
+class typePt : public tcBase {
+
+#define boardVoltage 5
+#if (boardVoltage == 5)
+#define zeroCmv 1111
+#define maxCrange 230
+#else
+#define zeroCmv 733
+#define maxCrange 329
+#endif
+
+public:
+	typePt();
+protected:
+	virtual FLOAT absTemp_C(FLOAT mV);   // returns temperature (referenced to 0C) for mV
+	virtual FLOAT absMV_C(FLOAT tempC);
+	virtual FLOAT mv_min() { return zeroCmv; } 
+	virtual FLOAT mv_max() { return 2000; } 
+	virtual FLOAT C_max() { return maxCrange; } 
+	virtual FLOAT C_min() { return 0; } 
+private:
+	static PROGMEM const PFLOAT ptOffset;
+	static PROGMEM const PFLOAT ptCoef;
+	bool CJC = false;
+};
+#endif  // using Pt
 
 #endif // THERMOCOUPLE_H_
 

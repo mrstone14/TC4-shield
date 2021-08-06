@@ -1,7 +1,10 @@
 // Thermocouple library per ITS-90
 // Version:  20110615
-// Version:  20190301: 
-// optimised by adding external amp support, and conditional compiling for unused TC types, to save memory, by RenatoA
+
+// New Version:  starting with 2019, by RenatoA
+//  20190301: optimised by adding ESP8266 compatibility and conditional compiling for unused TC types, to save memory
+//  20190403: added CJC as an option, default false for linear model, true for others
+//  20210806: added support for Pt100 RTD sensor (non-thermocouple)
 
 // *** BSD License ***
 // ------------------------------------------------------------------------------------------
@@ -340,3 +343,36 @@ FLOAT typeJ::absMV_C( FLOAT tempC ) {
 };
 
 #endif // using J 
+
+#ifdef usingPt
+// ------------------------------------- Type Pt
+// this code is for a Trianglelab amplifier board, powered from 5V or 3.3V
+// temperature range is limited to 230 C degrees when the board is powered from 5V , due to the 2V range limitations of ADC input 
+// greater range (329 C) can be obtained when powering board with 3.3V, but instability was been reported with certain board batches
+
+const PFLOAT typePt::ptOffset = 36; // mV
+const PFLOAT typePt::ptCoef = 3.85; // % per 10 C degrees
+
+// -------------------------- constructor
+typePt::typePt() { }
+
+// ------------------- given mv reading, returns absolute temp C
+FLOAT typePt::absTemp_C(FLOAT mv) {
+	if (!inrange_mV(mv))
+		return -1; // //  returns -1 C degrees value, when mV not in range 
+
+	return (mv - zeroCmv - ptOffset) / ptCoef;
+
+}
+
+// ---------------- returns mV corresponding to temp reading
+//                  used for cold junction compensation
+FLOAT typePt::absMV_C(FLOAT tempC) {
+	FLOAT sum;
+	if (!inrange_C(tempC))
+		return (zeroCmv - ptCoef); //  returns -1 C degrees voltage as temp not in range error
+
+	return zeroCmv + ptOffset + tempC * ptCoef;
+
+}
+#endif
