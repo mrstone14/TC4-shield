@@ -6,7 +6,7 @@ For an output voltage of 5V, and 5mV/C degree slope, this amplifier can measure 
 However, the designers of these boards decided to shift this range into negative temperatures realm too, and provided on board a 1.25V reference source, the result being a -250C range shift, thus -250c+750C total range, and 1.25V output voltage for 0C temperature.\
 Apparently, this +750C maximum temperature should be suitable for coffee roasting purposes, but we have a second limiting factor that make difficult to use the amp boards as they are sold.\
 This factor is the ADC input voltage range, only 2V.\
-If we measure directly the amp board output voltage then the useful range will be from 1.25V to 2V, i.e. 0.75V, that equates to 150 C only. Any temperature over 150C will be clipped and displayed as 150C.\
+If we measure directly the amp board output voltage then the useful range will be from 1.25V to 2V, i.e. 0.75V, that equates to 150 C only. Any temperature over 150C will be clipped and displayed as 150C.
 
 We have two choices to fix this issue:
 - short the reference voltage pin to ground, thus removing the temperature range shift into negatives, and output zero volts for zero C degress. The -CHx inputs of ADC will be connected to ground
