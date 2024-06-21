@@ -1,6 +1,7 @@
 This document assume you are familiar with loading software on ESP boards in Arduino IDE.\
 Else check tutorials like this:\
-https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
+https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/\
+The board core version should be set to 2.4.2. A successful build was also reported using V3.0.0, however...
 
 - Create a folder in Arduino sketchbooks locations, named aArtisanESP
 - download there all files from .../aArtisanESP/src folder
