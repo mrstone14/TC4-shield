@@ -40,6 +40,7 @@
 // 20110609  Significant revision for flexibility in selecting modes of operation
 // 20120126  Arduino 1.0 compatibility
 //  (thanks and acknowledgement to Arnaud Kodeck for his code contributions).
+// 20241216  Bug fix in thermocouple calibration. Added missing cal_offset parameter in readuV()
 
 #include "cADC.h"
 
@@ -118,7 +119,7 @@ uint16_t cADC::getConvTime() {
 }
 
 // --------------------------------------------------setCal
-void cADC::setCal( float gain, int8_t offs ) {
+void cADC::setCal( float gain, int16_t offs ) {
   cal_gain = gain - 1.0;  // to reduce loss of significance
   cal_offset = offs;
 };
@@ -155,7 +156,7 @@ int32_t cADC::readuV() {
   // shift based on ADC resolution plus ADC gain
   v >>= ( nLSB + gn ); // v = raw reading, uV
   // calculate effect of external calibration gain; minimize loss of significance
-  int32_t deltaV = round( (float)v * cal_gain );
+  int32_t deltaV = round( (float)v * cal_gain + cal_offset );
   return v + deltaV;  // returns corrected, unfiltered value of uV
 };
 

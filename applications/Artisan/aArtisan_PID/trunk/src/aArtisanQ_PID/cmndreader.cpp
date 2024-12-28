@@ -321,7 +321,7 @@ boolean ot2Cmnd::doCommand( CmndParser* pars ) {
       uint8_t len = strlen( pars->paramStr(1) );
       if( len > 0 ) {
         levelOT2 = atoi( pars->paramStr(1) );
-        if( levelOT2 > MAX_OT2 ) levelOT2 = levelOT2;  // don't allow OT2 to exceed maximum
+        if( levelOT2 > MAX_OT2 ) levelOT2 = MAX_OT2;  // don't allow OT2 to exceed maximum
         if( levelOT2 < MIN_OT2 & levelOT2 != 0 ) levelOT2 = MIN_OT2;  // don't allow to set less than minimum unless setting to zero
           outOT2();
         #ifdef ACKS_ON
@@ -375,6 +375,8 @@ boolean io3Cmnd::doCommand( CmndParser* pars ) {
       uint8_t len = strlen( pars->paramStr(1) );
       if( len > 0 ) {
         levelIO3 = atoi( pars->paramStr(1) );
+        if( levelIO3 > MAX_IO3 ) levelIO3 = MAX_IO3; // don't allow IO3 to exceed maximum
+        if( levelIO3 < MIN_IO3 & levelIO3 != 0 ) levelIO3 = MIN_IO3; // don't allow to set less than minimum unless setting to zero.
           outIO3();
         #ifdef ACKS_ON
         Serial.print(F("# IO3 level set to ")); Serial.println( levelIO3 );
@@ -512,7 +514,7 @@ void pidCmnd::pidOFF() {
 }
 
 // execute the PID command
-// PID;ON\n ;OFF\n ;TIME\n ;Pddd\n ;T;ddd;ddd;ddd;mode\n
+// PID;ON\n ;OFF\n ;TIME\n ;P;x\n ;T(or T_POM);ppp;iii;ddd\n
 
 boolean pidCmnd::doCommand( CmndParser* pars ) {
   if( strcmp( keyword, pars->cmndName() ) == 0 ) {
@@ -555,10 +557,17 @@ boolean pidCmnd::doCommand( CmndParser* pars ) {
         levelOT2 = FAN_AUTO_COOL;
         outOT2(); // Set fan to auto cool level on OT2
         #else
-        levelOT1 = 0;
-        outOT1(); // Turn heater off on OT1
-        levelOT2 = FAN_AUTO_COOL;
-        outOT2(); // Set fan to auto cool level on OT2
+          #ifdef CONFIG_PAC2_IO3FAN
+            levelOT1 = 0;
+            outOT1(); // Turn heater off on OT1
+            levelIO3 = FAN_AUTO_COOL;
+            outIO3(); // Set fan to auto cool level on IO3
+          #else
+            levelOT1 = 0;
+            outOT1(); // Turn heater off on OT1
+            levelOT2 = FAN_AUTO_COOL;
+            outOT2(); // Set fan to auto cool level on OT2
+          #endif
         #endif
         #else // PWM Mode
         levelOT1 = 0;
@@ -572,9 +581,9 @@ boolean pidCmnd::doCommand( CmndParser* pars ) {
       #endif
       return true;
     }
-    else if( pars->paramStr(1)[0] == 'P' ) { // Select profile
+    else if( strcmp( pars->paramStr(1), "P" ) == 0 ) { // Select profile
       #ifdef PID_CONTROL
-      profile_number = atoi( pars->paramStr(1) + 1 );
+      profile_number = atoi( pars->paramStr(2));
       setProfile();
       #ifdef ACKS_ON
       Serial.print(F("# Profile number "));
@@ -604,7 +613,7 @@ boolean pidCmnd::doCommand( CmndParser* pars ) {
     else if( strcmp( pars->paramStr(1), "SV" ) == 0 ) {
       SV = atof( pars->paramStr(2) );
       #ifdef ACKS_ON
-      Serial.print(F("# PID setpoint = ")); Serial.println(Setpoint);
+      Serial.print(F("# PID setpoint = ")); Serial.println(SV);
       #endif
       return true;
     }
@@ -781,6 +790,15 @@ boolean fanCmnd::doCommand( CmndParser* pars ) {
     uint8_t len = strlen( pars->paramStr(1) );
     if( len > 0 ) {
 #ifdef PHASE_ANGLE_CONTROL
+  #ifdef CONFIG_PAC2_IO3FAN
+      levelIO3 = atoi( pars->paramStr(1) );
+      if( levelIO3 > MAX_IO3 ) levelIO3 = MAX_IO3;  // don't allow fan duty to exceed maximum
+      if( levelIO3 < MIN_IO3 & levelIO3 != 0 ) levelIO3 = MIN_IO3;  // don't allow to set less than minimum unless setting to zero
+      outIO3();
+      #ifdef ACKS_ON
+      Serial.print(F("# IO3 level set to ")); Serial.println( levelIO3 );
+      #endif
+  #else
       levelOT2 = atoi( pars->paramStr(1) );
       if( levelOT2 > MAX_OT2 ) levelOT2 = MAX_OT2;  // don't allow fan duty to exceed maximum
       if( levelOT2 < MIN_OT2 & levelOT2 != 0 ) levelOT2 = MIN_OT2;  // don't allow to set less than minimum unless setting to zero
@@ -788,6 +806,7 @@ boolean fanCmnd::doCommand( CmndParser* pars ) {
       #ifdef ACKS_ON
       Serial.print(F("# OT2 level set to ")); Serial.println( levelOT2 );
       #endif
+  #endif
 #else
       levelIO3 = atoi( pars->paramStr(1) );
       if( levelIO3 > MAX_IO3 ) levelIO3 = MAX_IO3;  // don't allow fan duty to exceed maximum
@@ -806,4 +825,3 @@ boolean fanCmnd::doCommand( CmndParser* pars ) {
   }
 }
 #endif //ROASTLOGGER
-
